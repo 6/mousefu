@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test mousefu plugin</title>
+  <script src="lib/jquery-1.7.1.min.js"></script>
+  <script src="mousefu.js"></script>
+  <style>
+  body{background:#eee}
+  #wrap{margin:15px auto;padding:5px 30px;width:250px;background:#fff}
+  #example{width:250px;height:150px;border:1px solid #000}
+  .p{background:#f0f}.r{background:#f00}.y{background:#ff0}.b{background:#00f}
+  </style>
+  
+  <!-- Initialize mousefu when ready -->
+  <script>
+  // on document ready
+  $(function() {
+    // test HOVER events
+    $("#example").mousefu_hover(function(coords) {
+      $("#event").html("Hover over "+coords.x+", "+coords.y);
+    });
+    
+    $("#example").mousefu_hover_in(function(coords) {
+      $("#example").attr("class", "p");
+    });
+    
+    $("#example").mousefu_hover_out(function(coords) {
+      $("#event").html("Hover out at "+coords.x+", "+coords.y);
+      $("#example").attr("class", "");
+    });
+  });
+  </script>
+
+</head>
+<body>
+<div id="wrap">
+  <p>Try the following on the box below:</p>
+  <ul>
+    <li>Hover over
+    <li>Left and right click
+    <li>Click and drag
+  </ul>
+  <div id="example"></div>
+  <p id="event">No mouse events detected.</p>
+</div>
+</body>
+</html>
