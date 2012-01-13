@@ -16,18 +16,20 @@
   <script>
   // on document ready
   $(function() {
-    // test HOVER events
-    $("#example").mousefu_hover(function(coords) {
-      $("#event").html("Hover over "+coords.x+", "+coords.y);
+    $("#example").mousefu('enter', function(c) {
+      $("#example").addClass("p");
     });
-    
-    $("#example").mousefu_hover_in(function(coords) {
-      $("#example").attr("class", "p");
+    $("#example").mousefu('leave', function(c) {
+      $("#example").removeClass("p");
     });
-    
-    $("#example").mousefu_hover_out(function(coords) {
-      $("#event").html("Hover out at "+coords.x+", "+coords.y);
-      $("#example").attr("class", "");
+    $("#example").mousefu('enter leave', function(c) {
+      $("#event").html("Enter: "+c.enter.x+","+c.enter.y+" Leave: "+c.leave.x+","+c.leave.y);
+    });
+    $("#example").mousefu('move', function(c) {
+      $("#event").html("Move: "+c.move.x+","+c.move.y);
+    });
+    $("#example").mousefu('down up', function(c) {
+      $("#event").html("Click: "+c.down.x+","+c.down.y);
     });
   });
   </script>
