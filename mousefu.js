@@ -8,11 +8,10 @@
       if ((e.offsetX != null) && (e.offsetY != null)) {
         x = e.offsetX;
         y = e.offsetY;
-      } else {
-        offset = $h.offset();
-        x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(offset.left);
-        y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(offset.top);
       }
+      offset = $h.offset();
+      x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(offset.left);
+      y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(offset.top);
       return {
         x: this.between(x, 0, $h.width()),
         y: this.between(y, 0, $h.height())
