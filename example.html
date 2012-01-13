@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Test mousefu plugin</title>
   <script src="lib/jquery-1.7.1.min.js"></script>
+  <script src="lib/jquery.event.drag-1.5.min.js"></script>
   <script src="mousefu.js"></script>
   <style>
   body{background:#eee}
@@ -28,8 +29,8 @@
     $("#example").mousefu('move', function(c) {
       $("#event").html("Move: "+c.move.x+","+c.move.y);
     });
-    $("#example").mousefu('down up', function(c) {
-      $("#event").html("Click: "+c.down.x+","+c.down.y);
+    $("#example").mousefu('drag', function(c) {
+      $("#event").html("Drag: "+c.drag.x+","+c.drag.y);
     });
   });
   </script>

@@ -60,5 +60,8 @@ $.fn.extend
     $(@).mousemove (e) => m.event_detected $(@), 'move', e
     $(@).mousedown (e) => m.event_detected $(@), 'down', e
     $(@).mouseup (e) => m.event_detected $(@), 'up', e
+    $(@).dragstart (e) => m.event_detected $(@), 'dragstart', e
+    $(@).dragend (e) => m.event_detected $(@), 'dragend', e
+    $(@).drag (e) => m.event_detected $(@), 'drag', e
     
     m.has_bindings[$(@)] = yes

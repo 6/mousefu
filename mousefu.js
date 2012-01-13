@@ -5,10 +5,6 @@
     function Util() {}
     Util.prototype.relative_coords = function($h, e) {
       var offset, x, y;
-      if ((e.offsetX != null) && (e.offsetY != null)) {
-        x = e.offsetX;
-        y = e.offsetY;
-      }
       offset = $h.offset();
       x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - Math.floor(offset.left);
       y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - Math.floor(offset.top);
@@ -99,6 +95,15 @@
       }, this));
       $(this).mouseup(__bind(function(e) {
         return m.event_detected($(this), 'up', e);
+      }, this));
+      $(this).dragstart(__bind(function(e) {
+        return m.event_detected($(this), 'dragstart', e);
+      }, this));
+      $(this).dragend(__bind(function(e) {
+        return m.event_detected($(this), 'dragend', e);
+      }, this));
+      $(this).drag(__bind(function(e) {
+        return m.event_detected($(this), 'drag', e);
       }, this));
       return m.has_bindings[$(this)] = true;
     }
