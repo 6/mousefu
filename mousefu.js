@@ -95,10 +95,10 @@
       $(this).mouseup(__bind(function(e) {
         return m.event_detected($(this), 'up', e);
       }, this));
-      $(this).dragstart(__bind(function(e) {
+      $(this).bind('dragstart', __bind(function(e) {
         return m.event_detected($(this), 'dragstart', e);
       }, this));
-      $(this).dragend(__bind(function(e) {
+      $(this).bind('dragend', __bind(function(e) {
         return m.event_detected($(this), 'dragend', e);
       }, this));
       $(this).drag(__bind(function(e) {
