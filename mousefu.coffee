@@ -36,12 +36,6 @@ class MouseFu
     for event_s in events_info.list
       coords[event_s] = u.relative_coords($h, events_info.state[event_s])
     events_info.cb coords
-  
-  '''flush_with: ($h, event_s) ->
-    for i, events_info of @monitored_events[$h]
-      if $.inArray(event_s, events_info.list) > -1
-        #TODO flush the whole state?
-        delete @monitored_events[$h][i].state[event_s]'''
 
 u = new Util
 m = new MouseFu

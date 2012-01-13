@@ -64,7 +64,6 @@
       }
       return events_info.cb(coords);
     };
-    'flush_with: ($h, event_s) ->\nfor i, events_info of @monitored_events[$h]\n  if $.inArray(event_s, events_info.list) > -1\n    #TODO flush the whole state?\n    delete @monitored_events[$h][i].state[event_s]';
     return MouseFu;
   })();
   u = new Util;
