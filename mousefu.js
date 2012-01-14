@@ -57,6 +57,7 @@
         if (this.ignore_event(event_s) == null) {
           event_obj = this.state[$h][event_s] != null ? this.state[$h][event_s].event_obj : or_event_obj;
           coords[event_s] = u.relative_coords($h, event_obj);
+          coords[event_s].event_obj = event_obj;
         }
       }
       return coords;

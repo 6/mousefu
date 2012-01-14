@@ -33,6 +33,7 @@ class MouseFu
       unless @ignore_event(event_s)?
         event_obj = if @state[$h][event_s]? then @state[$h][event_s].event_obj else or_event_obj
         coords[event_s] = u.relative_coords($h, event_obj)
+        coords[event_s].event_obj = event_obj
     coords
 
   fire_callbacks: ($h) ->
