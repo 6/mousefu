@@ -21,38 +21,52 @@
   MouseFu = (function() {
     function MouseFu() {}
     MouseFu.prototype.monitored_events = {};
+    MouseFu.prototype.state = {};
     MouseFu.prototype.has_bindings = {};
-    MouseFu.prototype.event_detected = function($h, detected_event_s, event_obj) {
-      var event_s, events_info, i, _i, _len, _ref, _ref2;
-      _ref = this.monitored_events[$h];
-      for (i in _ref) {
-        events_info = _ref[i];
-        _ref2 = events_info.list;
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          event_s = _ref2[_i];
-          if (detected_event_s === event_s) {
-            this.monitored_events[$h][i].state[detected_event_s] = event_obj;
-          }
-        }
-      }
-      return this.fire_callbacks($h);
-    };
-    MouseFu.prototype.add_monitored_events = function($h, events_info) {
+    MouseFu.prototype.add_monitored_events = function($h, events_s_list, cb) {
       var _base, _ref;
       if ((_ref = (_base = this.monitored_events)[$h]) == null) {
         _base[$h] = [];
       }
-      return this.monitored_events[$h].push(events_info);
+      return this.monitored_events[$h].push({
+        list: events_s_list,
+        cb: cb
+      });
+    };
+    MouseFu.prototype.ignore_event = function(event_s) {
+      if (event_s.substring(0, 1) === "!") {
+        return event_s.substring(1);
+      } else {
+        return null;
+      }
     };
     MouseFu.prototype.fire_callbacks = function($h) {
-      var events_info, i, _ref, _results;
+      var all_events_pass, event_s, events_info, i, _i, _len, _ref, _ref2;
       _ref = this.monitored_events[$h];
-      _results = [];
       for (i in _ref) {
         events_info = _ref[i];
-        _results.push(Object.keys(events_info.state).length === events_info.list.length ? (this.send_to_cb($h, events_info), this.monitored_events[$h][i].state = {}) : void 0);
+        all_events_pass = true;
+        _ref2 = events_info.list;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          event_s = _ref2[_i];
+          if (this.ignore_event(event_s) != null) {
+            if (this.state[$h][this.ignore_event(event_s)] != null) {
+              all_events_pass = false;
+            }
+          } else {
+            if (this.state[$h][event_s] == null) {
+              all_events_pass = false;
+            }
+          }
+          if (!all_events_pass) {
+            break;
+          }
+        }
+        if (all_events_pass) {
+          this.send_to_cb($h, events_info);
+        }
       }
-      return _results;
+      return this.flush_temporary_states($h);
     };
     MouseFu.prototype.send_to_cb = function($h, events_info) {
       var coords, event_s, _i, _len, _ref;
@@ -60,9 +74,40 @@
       _ref = events_info.list;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event_s = _ref[_i];
-        coords[event_s] = u.relative_coords($h, events_info.state[event_s]);
+        if (this.ignore_event(event_s) == null) {
+          coords[event_s] = u.relative_coords($h, this.state[$h][event_s].event_obj);
+        }
       }
       return events_info.cb(coords);
+    };
+    MouseFu.prototype.set_state = function($h, event_s, event_obj, is_temporary) {
+      var _base, _ref;
+      if (is_temporary == null) {
+        is_temporary = false;
+      }
+      if ((_ref = (_base = this.state)[$h]) == null) {
+        _base[$h] = {};
+      }
+      return this.state[$h][event_s] = {
+        event_obj: event_obj,
+        is_temporary: is_temporary
+      };
+    };
+    MouseFu.prototype.set_temporary_state = function($h, event_s, event_obj) {
+      return this.set_state($h, event_s, event_obj, true);
+    };
+    MouseFu.prototype.flush_state = function($h, event_s) {
+      return this.state[$h][event_s] = null;
+    };
+    MouseFu.prototype.flush_temporary_states = function($h) {
+      var e, event_s, _ref, _results;
+      _ref = this.state[$h];
+      _results = [];
+      for (event_s in _ref) {
+        e = _ref[event_s];
+        _results.push((e != null) && e.is_temporary ? this.flush_state($h, event_s) : void 0);
+      }
+      return _results;
     };
     return MouseFu;
   })();
@@ -72,37 +117,31 @@
     mousefu: function(events_s, cb) {
       var events_s_list;
       events_s_list = events_s.split(' ');
-      m.add_monitored_events($(this), {
-        list: events_s_list,
-        cb: cb,
-        state: {}
-      });
+      m.add_monitored_events($(this), events_s_list, cb);
       if (m.has_bindings[$(this)] != null) {
         return;
       }
       $(this).mouseenter(__bind(function(e) {
-        return m.event_detected($(this), 'enter', e);
+        m.set_temporary_state($(this), 'enter', e);
+        return m.fire_callbacks($(this));
       }, this));
       $(this).mouseleave(__bind(function(e) {
-        return m.event_detected($(this), 'leave', e);
+        m.set_temporary_state($(this), 'leave', e);
+        return m.fire_callbacks($(this));
       }, this));
       $(this).mousemove(__bind(function(e) {
-        return m.event_detected($(this), 'move', e);
+        m.set_temporary_state($(this), 'move', e);
+        return m.fire_callbacks($(this));
       }, this));
       $(this).mousedown(__bind(function(e) {
-        return m.event_detected($(this), 'down', e);
+        m.set_state($(this), 'down', e);
+        m.flush_state($(this), 'up');
+        return m.fire_callbacks($(this));
       }, this));
       $(this).mouseup(__bind(function(e) {
-        return m.event_detected($(this), 'up', e);
-      }, this));
-      $(this).bind('dragstart', __bind(function(e) {
-        return m.event_detected($(this), 'dragstart', e);
-      }, this));
-      $(this).bind('dragend', __bind(function(e) {
-        return m.event_detected($(this), 'dragend', e);
-      }, this));
-      $(this).drag(__bind(function(e) {
-        return m.event_detected($(this), 'drag', e);
+        m.set_state($(this), 'up', e);
+        m.flush_state($(this), 'down');
+        return m.fire_callbacks($(this));
       }, this));
       return m.has_bindings[$(this)] = true;
     }

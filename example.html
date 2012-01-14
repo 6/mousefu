@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <title>Test mousefu plugin</title>
   <script src="lib/jquery-1.7.1.min.js"></script>
-  <script src="lib/jquery.event.drag-1.5.min.js"></script>
   <script src="mousefu.js"></script>
   <style>
   body{background:#eee}
@@ -17,20 +16,17 @@
   <script>
   // on document ready
   $(function() {
-    $("#example").mousefu('enter', function(c) {
-      $("#example").addClass("p");
-    });
     $("#example").mousefu('leave', function(c) {
-      $("#example").removeClass("p");
+      $("#example").attr("class", "");
+      $("#event").html("Leave: "+c.leave.x+","+c.leave.y);
     });
-    $("#example").mousefu('enter leave', function(c) {
-      $("#event").html("Enter: "+c.enter.x+","+c.enter.y+" Leave: "+c.leave.x+","+c.leave.y);
-    });
-    $("#example").mousefu('move', function(c) {
+    $("#example").mousefu('!down move', function(c) {
+      $("#example").attr("class", "p");
       $("#event").html("Move: "+c.move.x+","+c.move.y);
     });
-    $("#example").mousefu('drag', function(c) {
-      $("#event").html("Drag: "+c.drag.x+","+c.drag.y);
+    $("#example").mousefu('down move', function(c) {
+      $("#example").attr("class", "r");
+      $("#event").html("Drag: "+c.move.x+","+c.move.y+" (start at "+c.down.x+","+c.down.y+")");
     });
   });
   </script>
