@@ -43,6 +43,9 @@
       else {
         $("#example").attr("class", "b");
       }
+      $("#event").html("Mousewheel: "+c.mousewheel.x+","+c.mousewheel.y+" (delta "+c.mousewheel.event_obj.delta+")");
+      // prevent scrolling default behavior
+      c.mousewheel.event_obj.preventDefault();
     });
   });
   </script>
