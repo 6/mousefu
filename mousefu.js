@@ -195,6 +195,13 @@
         m.fire_se_callback('end', $(this), "down" + BUTTONS[e.which], e);
         return m.fire_callbacks($(this));
       }, this));
+      $(this).mousewheel(__bind(function(e, delta, deltaX, deltaY) {
+        e.delta = delta;
+        e.deltaX = deltaX;
+        e.deltaY = deltaY;
+        m.set_temporary_state($(this), 'mousewheel', e);
+        return m.fire_callbacks($(this));
+      }, this));
       return m.has_bindings[$(this)] = true;
     }
   });
