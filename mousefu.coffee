@@ -129,5 +129,8 @@ $.fn.extend
       e.deltaY = deltaY
       m.set_temporary_state $(@), 'mousewheel', e
       m.fire_callbacks $(@)
+    $(@).dblclick (e) =>
+      m.set_temporary_state $(@), 'dblclick', e
+      m.fire_all_callbacks $(@)
     
     m.has_bindings[$(@)] = yes

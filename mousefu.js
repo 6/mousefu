@@ -202,6 +202,10 @@
         m.set_temporary_state($(this), 'mousewheel', e);
         return m.fire_callbacks($(this));
       }, this));
+      $(this).dblclick(__bind(function(e) {
+        m.set_temporary_state($(this), 'dblclick', e);
+        return m.fire_all_callbacks($(this));
+      }, this));
       return m.has_bindings[$(this)] = true;
     }
   });

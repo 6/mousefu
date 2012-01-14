@@ -47,6 +47,9 @@
       // prevent scrolling default behavior
       c.mousewheel.event_obj.preventDefault();
     });
+    $("#example").mousefu('dblclick', function(c) {
+      alert("Double click at: "+c.dblclick.x+","+c.dblclick.y);
+    });
   });
   </script>
 
