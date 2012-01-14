@@ -1,6 +1,11 @@
 (function() {
-  var MouseFu, Util, m, u;
+  var BUTTONS, MouseFu, Util, m, u;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  BUTTONS = {
+    1: 'left',
+    2: 'middle',
+    3: 'right'
+  };
   Util = (function() {
     function Util() {}
     Util.prototype.relative_coords = function($h, e) {
@@ -134,13 +139,13 @@
         return m.fire_callbacks($(this));
       }, this));
       $(this).mousedown(__bind(function(e) {
-        m.set_state($(this), 'down', e);
-        m.flush_state($(this), 'up');
+        m.set_state($(this), "down" + BUTTONS[e.which], e);
+        m.flush_state($(this), "up" + BUTTONS[e.which]);
         return m.fire_callbacks($(this));
       }, this));
       $(this).mouseup(__bind(function(e) {
-        m.set_state($(this), 'up', e);
-        m.flush_state($(this), 'down');
+        m.set_state($(this), "up" + BUTTONS[e.which], e);
+        m.flush_state($(this), "down" + BUTTONS[e.which]);
         return m.fire_callbacks($(this));
       }, this));
       return m.has_bindings[$(this)] = true;

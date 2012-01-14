@@ -1,3 +1,8 @@
+BUTTONS =
+  1: 'left'
+  2: 'middle'
+  3: 'right'
+
 class Util
   relative_coords: ($h, e) ->
     offset = $h.offset()
@@ -80,12 +85,12 @@ $.fn.extend
       m.set_temporary_state $(@), 'move', e
       m.fire_callbacks $(@)
     $(@).mousedown (e) =>
-      m.set_state $(@), 'down', e
-      m.flush_state $(@), 'up'
+      m.set_state $(@), "down#{BUTTONS[e.which]}", e
+      m.flush_state $(@), "up#{BUTTONS[e.which]}"
       m.fire_callbacks $(@)
     $(@).mouseup (e) =>
-      m.set_state $(@), 'up', e
-      m.flush_state $(@), 'down'
+      m.set_state $(@), "up#{BUTTONS[e.which]}", e
+      m.flush_state $(@), "down#{BUTTONS[e.which]}"
       m.fire_callbacks $(@)
     
     m.has_bindings[$(@)] = yes
