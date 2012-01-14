@@ -187,7 +187,8 @@
         m.set_state($(this), "down" + BUTTONS[e.which], e);
         m.fire_se_callback('start', $(this), "down" + BUTTONS[e.which], e);
         m.fire_se_callback('end', $(this), "up" + BUTTONS[e.which], e);
-        return m.fire_callbacks($(this));
+        m.fire_callbacks($(this));
+        return e.preventDefault();
       }, this));
       $(this).mouseup(__bind(function(e) {
         m.set_state($(this), "up" + BUTTONS[e.which], e);

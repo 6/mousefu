@@ -118,6 +118,7 @@ $.fn.extend
       m.fire_se_callback 'start', $(@), "down#{BUTTONS[e.which]}", e
       m.fire_se_callback 'end', $(@), "up#{BUTTONS[e.which]}", e
       m.fire_callbacks $(@)
+      e.preventDefault()
     $(@).mouseup (e) =>
       m.set_state $(@), "up#{BUTTONS[e.which]}", e
       m.fire_se_callback 'start', $(@), "up#{BUTTONS[e.which]}", e
