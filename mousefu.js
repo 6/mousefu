@@ -45,6 +45,22 @@
         return null;
       }
     };
+    MouseFu.prototype.generate_coords_obj = function($h, events_info, or_event_obj) {
+      var coords, event_obj, event_s, _i, _len, _ref;
+      if (or_event_obj == null) {
+        or_event_obj = null;
+      }
+      coords = {};
+      _ref = events_info.list;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event_s = _ref[_i];
+        if (this.ignore_event(event_s) == null) {
+          event_obj = this.state[$h][event_s] != null ? this.state[$h][event_s].event_obj : or_event_obj;
+          coords[event_s] = u.relative_coords($h, event_obj);
+        }
+      }
+      return coords;
+    };
     MouseFu.prototype.fire_callbacks = function($h) {
       var all_events_pass, event_s, events_info, i, _i, _len, _ref, _ref2;
       _ref = this.monitored_events[$h];
@@ -68,22 +84,50 @@
           }
         }
         if (all_events_pass) {
-          this.send_to_cb($h, events_info);
+          this.send_to_default_cb($h, events_info);
         }
       }
       return this.flush_temporary_states($h);
     };
-    MouseFu.prototype.send_to_cb = function($h, events_info) {
-      var coords, event_s, _i, _len, _ref;
-      coords = {};
-      _ref = events_info.list;
+    MouseFu.prototype.send_to_default_cb = function($h, events_info) {
+      var coords;
+      coords = this.generate_coords_obj($h, events_info);
+      if (typeof events_info.cb === "function") {
+        return events_info.cb(coords);
+      } else {
+        return events_info.cb["default"](coords);
+      }
+    };
+    MouseFu.prototype.fire_se_callback = function(type_s, $h, event_s, event_obj) {
+      var coords, events_info, _i, _len, _ref;
+      _ref = this.monitored_events[$h];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event_s = _ref[_i];
-        if (this.ignore_event(event_s) == null) {
-          coords[event_s] = u.relative_coords($h, this.state[$h][event_s].event_obj);
+        events_info = _ref[_i];
+        if (typeof events_info.cb !== "object") {
+          continue;
+        }
+        if ($.inArray(event_s, events_info.list) > -1) {
+          coords = this.generate_coords_obj($h, events_info, event_obj);
+          if ((events_info.cb.start != null) && type_s === "start") {
+            events_info.cb.start(coords);
+          } else if ((events_info.cb.end != null) && type_s === "end") {
+            events_info.cb.end(coords);
+          }
         }
       }
-      return events_info.cb(coords);
+      if (type_s === "end") {
+        return this.flush_state($h, event_s);
+      }
+    };
+    MouseFu.prototype.fire_all_callbacks = function($h, event_s, event_obj) {
+      var events_info, _i, _len, _ref, _results;
+      _ref = this.monitored_events[$h];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        events_info = _ref[_i];
+        _results.push(typeof events_info.cb === "function" ? this.fire_callbacks($h) : (events_info.cb.start != null ? this.fire_se_callback('start', $h, event_s, event_obj) : void 0, events_info.cb.end != null ? this.fire_se_callback('end', $h, event_s, event_obj) : void 0));
+      }
+      return _results;
     };
     MouseFu.prototype.set_state = function($h, event_s, event_obj, is_temporary) {
       var _base, _ref;
@@ -128,11 +172,11 @@
       }
       $(this).mouseenter(__bind(function(e) {
         m.set_temporary_state($(this), 'enter', e);
-        return m.fire_callbacks($(this));
+        return m.fire_all_callbacks($(this), 'enter', e);
       }, this));
       $(this).mouseleave(__bind(function(e) {
         m.set_temporary_state($(this), 'leave', e);
-        return m.fire_callbacks($(this));
+        return m.fire_all_callbacks($(this), 'leave', e);
       }, this));
       $(this).mousemove(__bind(function(e) {
         m.set_temporary_state($(this), 'move', e);
@@ -140,12 +184,14 @@
       }, this));
       $(this).mousedown(__bind(function(e) {
         m.set_state($(this), "down" + BUTTONS[e.which], e);
-        m.flush_state($(this), "up" + BUTTONS[e.which]);
+        m.fire_se_callback('start', $(this), "down" + BUTTONS[e.which], e);
+        m.fire_se_callback('end', $(this), "up" + BUTTONS[e.which], e);
         return m.fire_callbacks($(this));
       }, this));
       $(this).mouseup(__bind(function(e) {
         m.set_state($(this), "up" + BUTTONS[e.which], e);
-        m.flush_state($(this), "down" + BUTTONS[e.which]);
+        m.fire_se_callback('start', $(this), "up" + BUTTONS[e.which], e);
+        m.fire_se_callback('end', $(this), "down" + BUTTONS[e.which], e);
         return m.fire_callbacks($(this));
       }, this));
       return m.has_bindings[$(this)] = true;

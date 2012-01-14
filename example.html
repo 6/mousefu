@@ -24,9 +24,16 @@
       $("#example").attr("class", "p");
       $("#event").html("Move: "+c.move.x+","+c.move.y);
     });
-    $("#example").mousefu('downleft move', function(c) {
-      $("#example").attr("class", "r");
-      $("#event").html("Drag: "+c.move.x+","+c.move.y+" (start at "+c.downleft.x+","+c.downleft.y+")");
+    $("#example").mousefu('downleft move', {
+      start: function(c) {
+        $("#example").attr("class", "r");
+      },
+      default: function(c) {
+        $("#event").html("Drag: "+c.move.x+","+c.move.y+" (start at "+c.downleft.x+","+c.downleft.y+")");
+      },
+      end: function(c) {
+        $("#example").attr("class", "p");
+      }
     });
   });
   </script>
