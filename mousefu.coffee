@@ -137,12 +137,13 @@ $.fn.extend
       m.fire_se_callback 'start', $(@), "up#{BUTTONS[e.which]}", e
       m.fire_se_callback 'end', $(@), "down#{BUTTONS[e.which]}", e
       m.fire_callbacks $(@)
-    $(@).mousewheel (e, delta, deltaX, deltaY) =>
-      e.delta = delta
-      e.deltaX = deltaX
-      e.deltaY = deltaY
-      m.set_temporary_state $(@), 'mousewheel', e
-      m.fire_callbacks $(@)
+    if $.fn.mousewheel?
+      $(@).mousewheel (e, delta, deltaX, deltaY) =>
+        e.delta = delta
+        e.deltaX = deltaX
+        e.deltaY = deltaY
+        m.set_temporary_state $(@), 'mousewheel', e
+        m.fire_callbacks $(@)
     $(@).dblclick (e) =>
       m.set_temporary_state $(@), 'dblclick', e
       m.fire_all_callbacks $(@)

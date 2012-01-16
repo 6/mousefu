@@ -222,13 +222,15 @@
         m.fire_se_callback('end', $(this), "down" + BUTTONS[e.which], e);
         return m.fire_callbacks($(this));
       }, this));
-      $(this).mousewheel(__bind(function(e, delta, deltaX, deltaY) {
-        e.delta = delta;
-        e.deltaX = deltaX;
-        e.deltaY = deltaY;
-        m.set_temporary_state($(this), 'mousewheel', e);
-        return m.fire_callbacks($(this));
-      }, this));
+      if ($.fn.mousewheel != null) {
+        $(this).mousewheel(__bind(function(e, delta, deltaX, deltaY) {
+          e.delta = delta;
+          e.deltaX = deltaX;
+          e.deltaY = deltaY;
+          m.set_temporary_state($(this), 'mousewheel', e);
+          return m.fire_callbacks($(this));
+        }, this));
+      }
       $(this).dblclick(__bind(function(e) {
         m.set_temporary_state($(this), 'dblclick', e);
         return m.fire_all_callbacks($(this));
