@@ -36,7 +36,7 @@
         $("#example").attr("class", "p");
       }
     });
-    $("#example").mousefu('mousewheel', function(c) {
+    on_mousewheel = function(c) {
       if(c.mousewheel.event_obj.delta > 0) {
         $("#example").attr("class", "y");
       }
@@ -46,9 +46,11 @@
       $("#event").html("Mousewheel: "+c.mousewheel.x+","+c.mousewheel.y+" (delta "+c.mousewheel.event_obj.delta+")");
       // prevent scrolling default behavior
       c.mousewheel.event_obj.preventDefault();
-    });
+    };
+    $("#example").mousefu('mousewheel', on_mousewheel);
     $("#example").mousefu('dblclick', function(c) {
       alert("Double click at: "+c.dblclick.x+","+c.dblclick.y);
+      $("#example").mousefu_unbind('mousewheel', on_mousewheel);
     });
   });
   </script>

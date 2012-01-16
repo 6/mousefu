@@ -24,6 +24,17 @@ class MouseFu
       list: events_s_list
       cb: cb
   
+  remove_monitored_events: ($h, events_s_list, cb) ->
+    idx_to_delete = null
+    sorted_delete = events_s_list.sort()
+    for i, events_info of @monitored_events[$h]
+      continue unless events_info.cb?
+      sorted = events_info.list.sort()
+      if sorted_delete.toString() is sorted.toString()
+        idx_to_delete = parseInt(i)
+        break
+    @monitored_events[$h][i].cb = null if idx_to_delete?
+  
   ignore_event: (event_s) ->
     if event_s.substring(0, 1) is "!" then event_s.substring(1) else null
 
@@ -38,6 +49,7 @@ class MouseFu
 
   fire_callbacks: ($h) ->
     for i, events_info of @monitored_events[$h]
+      continue unless events_info.cb?
       all_events_pass = yes
       for event_s in events_info.list
         if @ignore_event(event_s)?
@@ -57,7 +69,7 @@ class MouseFu
       
   fire_se_callback: (type_s, $h, event_s, event_obj) ->
     for events_info in @monitored_events[$h]
-      continue unless typeof events_info.cb is "object"
+      continue unless events_info.cb? and typeof events_info.cb is "object"
       if $.inArray(event_s, events_info.list) > -1
         coords = @generate_coords_obj $h, events_info, event_obj
         if events_info.cb.start? and type_s is "start"
@@ -68,6 +80,7 @@ class MouseFu
   
   fire_all_callbacks: ($h, event_s, event_obj) ->
     for events_info in @monitored_events[$h]
+      continue unless events_info.cb?
       if typeof events_info.cb is "function"
         @fire_callbacks $h
       else
@@ -135,3 +148,6 @@ $.fn.extend
       m.fire_all_callbacks $(@)
     
     m.has_bindings[$(@)] = yes
+
+  mousefu_unbind: (events_s, cb) ->
+    m.remove_monitored_events $(@), events_s.split(' '), cb

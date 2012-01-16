@@ -38,6 +38,26 @@
         cb: cb
       });
     };
+    MouseFu.prototype.remove_monitored_events = function($h, events_s_list, cb) {
+      var events_info, i, idx_to_delete, sorted, sorted_delete, _ref;
+      idx_to_delete = null;
+      sorted_delete = events_s_list.sort();
+      _ref = this.monitored_events[$h];
+      for (i in _ref) {
+        events_info = _ref[i];
+        if (events_info.cb == null) {
+          continue;
+        }
+        sorted = events_info.list.sort();
+        if (sorted_delete.toString() === sorted.toString()) {
+          idx_to_delete = parseInt(i);
+          break;
+        }
+      }
+      if (idx_to_delete != null) {
+        return this.monitored_events[$h][i].cb = null;
+      }
+    };
     MouseFu.prototype.ignore_event = function(event_s) {
       if (event_s.substring(0, 1) === "!") {
         return event_s.substring(1);
@@ -67,6 +87,9 @@
       _ref = this.monitored_events[$h];
       for (i in _ref) {
         events_info = _ref[i];
+        if (events_info.cb == null) {
+          continue;
+        }
         all_events_pass = true;
         _ref2 = events_info.list;
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
@@ -104,7 +127,7 @@
       _ref = this.monitored_events[$h];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         events_info = _ref[_i];
-        if (typeof events_info.cb !== "object") {
+        if (!((events_info.cb != null) && typeof events_info.cb === "object")) {
           continue;
         }
         if ($.inArray(event_s, events_info.list) > -1) {
@@ -126,6 +149,9 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         events_info = _ref[_i];
+        if (events_info.cb == null) {
+          continue;
+        }
         _results.push(typeof events_info.cb === "function" ? this.fire_callbacks($h) : (events_info.cb.start != null ? this.fire_se_callback('start', $h, event_s, event_obj) : void 0, events_info.cb.end != null ? this.fire_se_callback('end', $h, event_s, event_obj) : void 0));
       }
       return _results;
@@ -208,6 +234,9 @@
         return m.fire_all_callbacks($(this));
       }, this));
       return m.has_bindings[$(this)] = true;
+    },
+    mousefu_unbind: function(events_s, cb) {
+      return m.remove_monitored_events($(this), events_s.split(' '), cb);
     }
   });
 }).call(this);
