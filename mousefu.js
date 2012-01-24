@@ -40,6 +40,9 @@
     };
     MouseFu.prototype.remove_monitored_events = function($h, events_s_list, cb) {
       var events_info, i, idx_to_delete, sorted, sorted_delete, _ref;
+      if (events_s_list == null) {
+        return delete this.monitored_events[$h];
+      }
       idx_to_delete = null;
       sorted_delete = events_s_list.sort();
       _ref = this.monitored_events[$h];
@@ -118,7 +121,7 @@
       coords = this.generate_coords_obj($h, events_info);
       if (typeof events_info.cb === "function") {
         return events_info.cb(coords);
-      } else {
+      } else if (events_info.cb["default"] != null) {
         return events_info.cb["default"](coords);
       }
     };
@@ -238,7 +241,9 @@
       return m.has_bindings[$(this)] = true;
     },
     mousefu_unbind: function(events_s, cb) {
-      return m.remove_monitored_events($(this), events_s.split(' '), cb);
+      var events_list;
+      events_list = events_s != null ? events_s.split(' ') : null;
+      return m.remove_monitored_events($(this), events_list, cb);
     }
   });
 }).call(this);

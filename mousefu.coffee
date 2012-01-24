@@ -25,6 +25,7 @@ class MouseFu
       cb: cb
   
   remove_monitored_events: ($h, events_s_list, cb) ->
+    return delete @monitored_events[$h] unless events_s_list?
     idx_to_delete = null
     sorted_delete = events_s_list.sort()
     for i, events_info of @monitored_events[$h]
@@ -151,4 +152,5 @@ $.fn.extend
     m.has_bindings[$(@)] = yes
 
   mousefu_unbind: (events_s, cb) ->
-    m.remove_monitored_events $(@), events_s.split(' '), cb
+    events_list = if events_s? then events_s.split(' ') else null
+    m.remove_monitored_events $(@), events_list, cb
