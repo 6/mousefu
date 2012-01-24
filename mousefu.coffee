@@ -64,7 +64,7 @@ class MouseFu
     coords = @generate_coords_obj $h, events_info
     if typeof events_info.cb is "function"
       events_info.cb coords
-    else
+    else if events_info.cb.default?
       events_info.cb.default coords
       
   fire_se_callback: (type_s, $h, event_s, event_obj) ->
